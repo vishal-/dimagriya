@@ -11,9 +11,12 @@ export interface Section {
 }
 
 export interface Assessment {
+  id?: string;
   grade: number;
   subject: string;
   title: string;
-  totalQuestions: number;
+  total_questions: number;
   sections: Section[];
+  created_at?: string;
+  updated_at?: string;
 }
