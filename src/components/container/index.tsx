@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import Admin from "../pages/Admin";
 import AdminAssessments from "../pages/AdminAssessments";
 import Navigation from "../common/Navigation";
+import AuthGuard from "../auth/AuthGuard";
 
 const Container = () => {
   return (
@@ -12,8 +13,8 @@ const Container = () => {
       {/* Main Content */}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/assessments" element={<AdminAssessments />} />
+        <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
+        <Route path="/admin/assessments" element={<AuthGuard><AdminAssessments /></AuthGuard>} />
       </Routes>
     </div>
   );
