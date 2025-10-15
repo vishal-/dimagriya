@@ -21,11 +21,22 @@ const AssessmentForm = ({ assessment, onSave }: AssessmentFormProps) => {
       
       const parsedAssessment: Assessment = JSON.parse(jsonInput);
       
-      const { error: supabaseError } = await supabase
-        .from('assessments')
-        .insert([parsedAssessment]);
-
-      if (supabaseError) throw supabaseError;
+      if (assessment?.id) {
+        // Update existing assessment
+        const { error: supabaseError } = await supabase
+          .from('assessments')
+          .update(parsedAssessment)
+          .eq('id', assessment.id);
+        
+        if (supabaseError) throw supabaseError;
+      } else {
+        // Create new assessment
+        const { error: supabaseError } = await supabase
+          .from('assessments')
+          .insert([parsedAssessment]);
+        
+        if (supabaseError) throw supabaseError;
+      }
       
       onSave?.();
     } catch (err) {

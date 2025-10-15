@@ -5,6 +5,7 @@ import supabase from '../../utils/supabase';
 
 const AdminAssessments = () => {
   const [showForm, setShowForm] = useState(false);
+  const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,7 +51,10 @@ const AdminAssessments = () => {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold text-gray-100">Assessments</h1>
             <button 
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                setShowForm(!showForm);
+                setSelectedAssessment(null);
+              }}
               className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
             >
               {showForm ? 'Cancel' : 'Create Assessment'}
@@ -58,10 +62,14 @@ const AdminAssessments = () => {
           </div>
 
           {showForm ? (
-            <AssessmentForm onSave={() => {
-              setShowForm(false);
-              fetchAssessments(currentPage);
-            }} />
+            <AssessmentForm 
+              assessment={selectedAssessment || undefined}
+              onSave={() => {
+                setShowForm(false);
+                setSelectedAssessment(null);
+                fetchAssessments(currentPage);
+              }} 
+            />
           ) : (
             <div className="space-y-6">
               {loading ? (
@@ -83,7 +91,14 @@ const AdminAssessments = () => {
                 <>
                   <div className="grid gap-4">
                     {assessments.map((assessment) => (
-                      <div key={assessment.id} className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-700/50 hover:shadow-2xl transition-all">
+                      <div 
+                        key={assessment.id} 
+                        onClick={() => {
+                          setSelectedAssessment(assessment);
+                          setShowForm(true);
+                        }}
+                        className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-700/50 hover:shadow-2xl transition-all cursor-pointer"
+                      >
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="text-xl font-bold text-gray-100 mb-2">{assessment.title}</h3>
