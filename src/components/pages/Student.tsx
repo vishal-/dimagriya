@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Assessment } from "../../types/assessment";
 import supabase from "../../utils/supabase";
 
@@ -15,38 +15,7 @@ const Student = () => {
   const [loading, setLoading] = useState(true);
   const [loadingAssessments, setLoadingAssessments] = useState(false);
 
-  useEffect(() => {
-    fetchGradeSubjects();
-  }, []);
-
-  useEffect(() => {
-    if (selectedGrade && selectedSubject) {
-      fetchAssessments();
-    }
-  }, [selectedGrade, selectedSubject]);
-
-  const fetchAssessments = async () => {
-    if (!selectedGrade || !selectedSubject) return;
-
-    try {
-      setLoadingAssessments(true);
-      const { data, error } = await supabase
-        .from("assessments")
-        .select("*")
-        .eq("grade", selectedGrade)
-        .eq("subject", selectedSubject)
-        .order("updated_at", { ascending: false });
-
-      if (error) throw error;
-      setAssessments(data || []);
-    } catch (error) {
-      console.error("Error fetching assessments:", error);
-    } finally {
-      setLoadingAssessments(false);
-    }
-  };
-
-  const fetchGradeSubjects = async () => {
+  const fetchGradeSubjects = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("assessments")
@@ -72,7 +41,38 @@ const Student = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const fetchAssessments = useCallback(async () => {
+    if (!selectedGrade || !selectedSubject) return;
+
+    try {
+      setLoadingAssessments(true);
+      const { data, error } = await supabase
+        .from("assessments")
+        .select("*")
+        .eq("grade", selectedGrade)
+        .eq("subject", selectedSubject)
+        .order("updated_at", { ascending: false });
+
+      if (error) throw error;
+      setAssessments(data || []);
+    } catch (error) {
+      console.error("Error fetching assessments:", error);
+    } finally {
+      setLoadingAssessments(false);
+    }
+  }, [selectedGrade, selectedSubject]);
+
+  useEffect(() => {
+    fetchGradeSubjects();
+  }, [fetchGradeSubjects]);
+
+  useEffect(() => {
+    if (selectedGrade && selectedSubject) {
+      fetchAssessments();
+    }
+  }, [selectedGrade, selectedSubject, fetchAssessments]);
 
   const uniqueGrades = [...new Set(gradeSubjects.map((gs) => gs.grade))].sort(
     (a, b) => a - b
