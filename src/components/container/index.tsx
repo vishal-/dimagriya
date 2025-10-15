@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import Admin from "../pages/Admin";
 import AdminAssessments from "../pages/AdminAssessments";
 import Student from "../pages/Student";
+import AssessmentView from "../pages/AssessmentView";
 // import Navigation from "../common/Navigation";
 import AuthGuard from "../auth/AuthGuard";
 
@@ -15,6 +16,7 @@ const Container = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/student" element={<Student />} />
+        <Route path="/assessment/:id" element={<AssessmentView />} />
         <Route
           path="/admin"
           element={

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import type { Assessment } from "../../types/assessment";
 import supabase from "../../utils/supabase";
 
@@ -179,9 +180,11 @@ const Student = () => {
                               {assessment.total_questions} questions
                             </p>
                           </div>
-                          <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200">
-                            Start Assessment
-                          </button>
+                          <Link to={`/assessment/${assessment.id}`}>
+                            <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200">
+                              Start Assessment
+                            </button>
+                          </Link>
                         </div>
                       ))}
                     </div>
