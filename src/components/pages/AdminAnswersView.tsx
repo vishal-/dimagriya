@@ -39,6 +39,34 @@ const AdminAnswersView = () => {
     return letters[index] || answerIndex;
   };
 
+  // Helper function to get answer details
+  const getAnswerDetails = (question: {
+    answer: string;
+    options: string[];
+  }) => {
+    // First, try to find the answer in the options array
+    const answerIndex = question.options.findIndex(
+      (option) => option === question.answer
+    );
+
+    if (answerIndex !== -1) {
+      // Answer is the actual text, found in options
+      const answerLetter = getAnswerLetter((answerIndex + 1).toString());
+      return { letter: answerLetter, text: question.answer };
+    } else {
+      // Answer might be an index string
+      const parsedIndex = parseInt(question.answer) - 1;
+      if (parsedIndex >= 0 && parsedIndex < question.options.length) {
+        const answerLetter = getAnswerLetter(question.answer);
+        const answerText = question.options[parsedIndex];
+        return { letter: answerLetter, text: answerText };
+      } else {
+        // Fallback
+        return { letter: "Unknown", text: question.answer };
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
@@ -139,8 +167,11 @@ const AdminAnswersView = () => {
                           </span>
                         </div>
                         <div className="flex-1">
-                          <span className="text-gray-200 font-medium">
-                            Answer: {getAnswerLetter(question.answer)}
+                          <span className="text-gray-200 text-2xl">
+                            Answer:&#160;&#160;&#160;
+                            {getAnswerDetails(question).letter}
+                            &#160;&#160;-&#160;&#160;
+                            {getAnswerDetails(question).text}
                           </span>
                         </div>
                       </div>

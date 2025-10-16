@@ -38,7 +38,7 @@ const Admin = () => {
             </div>
           </Link>
 
-          <Link to="/admin/answers" className="block">
+          <Link to="/admin/answers" className="block mt-5">
             <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-700/50 group">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
