@@ -7,6 +7,7 @@ const AssessmentView = () => {
   const { id } = useParams<{ id: string }>();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
+  const [timeElapsed, setTimeElapsed] = useState(0);
 
   const fetchAssessment = useCallback(async () => {
     if (!id) return;
@@ -30,6 +31,26 @@ const AssessmentView = () => {
   useEffect(() => {
     fetchAssessment();
   }, [fetchAssessment]);
+
+  // Timer effect
+  useEffect(() => {
+    if (!loading && assessment) {
+      const timer = setInterval(() => {
+        setTimeElapsed((prev) => prev + 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [loading, assessment]);
+
+  // Format time as mm:ss
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   if (loading) {
     return (
@@ -143,6 +164,34 @@ const AssessmentView = () => {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Sticky Footer with Timer */}
+      <div className="sticky bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm border-t border-gray-600/50 shadow-lg">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-center items-center">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-full shadow-md">
+              <div className="flex items-center space-x-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span className="text-lg font-bold font-mono">
+                  {formatTime(timeElapsed)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
