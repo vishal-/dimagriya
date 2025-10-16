@@ -83,8 +83,8 @@ const AssessmentView = () => {
           {assessment.sections.map((section, sectionIndex) => (
             <div key={sectionIndex} className="mb-12">
               {/* Section Header */}
-              <div className="bg-gray-700/50 rounded-2xl p-6 mb-8 shadow-lg border border-gray-600">
-                <h2 className="text-2xl font-bold text-gray-100 text-center">
+              <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-8 shadow-xl border-2 border-white/20">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent text-center drop-shadow-lg">
                   {section.name}
                 </h2>
               </div>
@@ -112,11 +112,12 @@ const AssessmentView = () => {
                     </div>
 
                     {/* Options Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-wrap gap-4">
                       {question.options.map((option, optionIndex) => (
                         <div
                           key={optionIndex}
                           className="bg-gray-700/60 rounded-xl p-4 border border-gray-600 hover:border-blue-400 transition-colors shadow-sm"
+                          style={{ minWidth: "200px", flexBasis: "auto" }}
                         >
                           <div className="flex items-start space-x-3">
                             {/* Simple Option Label */}
