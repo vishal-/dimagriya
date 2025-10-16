@@ -1,126 +1,42 @@
 # DiMagriya - Assessment Platform
 
-A modern React-based assessment platform built with TypeScript, Vite, and Tailwind CSS. Features a kid-friendly dark theme, timer functionality, and comprehensive admin tools for managing assessments.
+A fun and engaging assessment platform designed for students with a kid-friendly interface, timers, and comprehensive admin tools for teachers and educators.
 
-## Features
+## ✨ Features
 
-- 🎨 **Kid-friendly UI** with dark theme and colorful accents
-- ⏱️ **Timer functionality** with sticky footer display
-- 📝 **Assessment management** with sections and questions
-- 🔐 **Admin dashboard** with authentication
-- 📊 **Answer key viewer** for admins
-- 📱 **Responsive design** for all devices
-- 🚀 **Fast deployment** to GitHub Pages
+- 🎨 **Kid-friendly Design** - Dark theme with colorful accents and easy-to-read fonts
+- ⏱️ **Timer Functionality** - Built-in timer with sticky display to track assessment time
+- 📝 **Organized Assessments** - Questions grouped by sections with clear navigation
+- 🔐 **Admin Dashboard** - Complete management tools for creating and organizing assessments
+- 📊 **Answer Keys** - Easy access to correct answers for all assessments
+- 📱 **Mobile Friendly** - Works perfectly on all devices
+- 🚀 **Fast & Reliable** - Quick loading and smooth performance
 
-## Tech Stack
+## 🎓 For Students
 
-- **Frontend**: React 19, TypeScript, Vite
-- **Styling**: Tailwind CSS v4
-- **Routing**: React Router DOM (HashRouter)
-- **Backend**: Supabase
-- **Deployment**: GitHub Pages
+1. **Take Assessments** - Access your assigned assessments with clear, easy-to-read questions
+2. **Track Time** - See how much time you have left with the visible timer
+3. **Multiple Choice** - Answer questions with lettered options (a, b, c, d, e)
+4. **Organized Sections** - Questions are grouped by topic for better focus
 
-## Getting Started
+## 👨‍🏫 For Teachers & Admins
 
-### Prerequisites
+1. **Manage Assessments** - Create, edit, and organize assessment content
+2. **View Answers** - Access complete answer keys with both letters and full text
+3. **Organize by Grade** - Sort assessments by grade level and subject
+4. **Track Progress** - Monitor assessment completion and timing
 
-- Node.js 18+
-- npm or yarn
+## 🎯 How It Works
 
-### Installation
+- **Students** navigate to their assigned assessments and complete them with the timer running
+- **Admins** use the `/admin` section to manage content and view answer keys
+- **Assessments** are organized by grade, subject, and sections for easy navigation
+- **Answers** show both the letter (a, b, c, etc.) and the complete answer text
 
-1. Clone the repository:
+## 🌟 Getting Started
 
-```bash
-git clone https://github.com/your-username/dimagriya.git
-cd dimagriya
-```
+Simply visit the assessment platform and follow the on-screen instructions. Students can start taking assessments immediately, while admins can access management tools through the admin dashboard.
 
-2. Install dependencies:
+---
 
-```bash
-npm install
-```
-
-3. Start the development server:
-
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run deploy` - Deploy to GitHub Pages (local)
-
-## Deployment to GitHub Pages
-
-### Automatic Deployment (Recommended)
-
-This project includes GitHub Actions for automatic deployment:
-
-1. **Push to main branch**: The app automatically deploys when you push to the `main` or `setup` branch.
-2. **Custom domain is already configured** in GitHub Pages settings.
-
-### Manual Deployment
-
-If you prefer to deploy manually:
-
-1. Build the project:
-
-```bash
-npm run build
-```
-
-2. Deploy using gh-pages:
-
-```bash
-npm run deploy
-```
-
-### GitHub Pages Configuration
-
-1. Go to your repository settings
-2. Navigate to "Pages" in the sidebar
-3. Set source to "GitHub Actions"
-4. The workflow will handle the rest
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── common/          # Reusable components
-│   ├── container/       # Main app container
-│   ├── pages/          # Page components
-│   └── auth/           # Authentication components
-├── types/              # TypeScript type definitions
-├── utils/              # Utility functions
-└── assets/             # Static assets
-```
-
-## Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
+_Built with care for educational excellence_ 📚✨
