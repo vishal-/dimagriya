@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import type { Assessment } from "../../types/assessment";
 import supabase from "../../utils/supabase";
+import Prompt from "../common/Prompt";
 
 const AssessmentView = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [showFinishPrompt, setShowFinishPrompt] = useState(false);
 
   const fetchAssessment = useCallback(async () => {
     if (!id) return;
@@ -52,6 +55,20 @@ const AssessmentView = () => {
       .padStart(2, "0")}`;
   };
 
+  // Handle finishing the test
+  const handleFinishTest = () => {
+    setShowFinishPrompt(true);
+  };
+
+  const handleConfirmFinish = () => {
+    setShowFinishPrompt(false);
+    navigate("/");
+  };
+
+  const handleCancelFinish = () => {
+    setShowFinishPrompt(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
@@ -84,86 +101,115 @@ const AssessmentView = () => {
   const optionLabels = ["a", "b", "c", "d", "e"];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700/50">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent mb-4">
-                {assessment.title}
-              </h1>
-              <div className="inline-flex items-center bg-gray-700/50 px-6 py-2 rounded-full border border-gray-600">
-                <span className="text-gray-200 font-semibold text-lg">
-                  Grade {assessment.grade} • {assessment.subject}
-                </span>
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700/50">
+              <div className="text-center">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent mb-4">
+                  {assessment.title}
+                </h1>
+                <div className="inline-flex items-center bg-gray-700/50 px-6 py-2 rounded-full border border-gray-600">
+                  <span className="text-gray-200 font-semibold text-lg">
+                    Grade {assessment.grade} • {assessment.subject}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {assessment.sections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="mb-12">
-              {/* Section Header */}
-              <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-8 shadow-xl border-2 border-white/20">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent text-center drop-shadow-lg">
-                  {section.name}
-                </h2>
-              </div>
+            {assessment.sections.map((section, sectionIndex) => (
+              <div key={sectionIndex} className="mb-12">
+                {/* Section Header */}
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-8 shadow-xl border-2 border-white/20">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent text-center drop-shadow-lg">
+                    {section.name}
+                  </h2>
+                </div>
 
-              <div className="space-y-8">
-                {section.questions.map((question) => (
-                  <div
-                    key={question.id}
-                    className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-md"
-                  >
-                    {/* Question Header with Large Number */}
-                    <div className="flex items-start space-x-4 mb-6">
-                      <div className="flex-shrink-0">
-                        <div className="ms-3">
-                          <span className="text-2xl text-yellow-300 font-bold text-white">
-                            {question.id}&#160;&#45;
-                          </span>
+                <div className="space-y-8">
+                  {section.questions.map((question) => (
+                    <div
+                      key={question.id}
+                      className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-md"
+                    >
+                      {/* Question Header with Large Number */}
+                      <div className="flex items-start space-x-4 mb-6">
+                        <div className="flex-shrink-0">
+                          <div className="ms-3">
+                            <span className="text-2xl text-yellow-300 font-bold text-white">
+                              {question.id}&#160;&#45;
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-gray-100 leading-relaxed">
+                            {question.question}
+                          </h3>
                         </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-100 leading-relaxed">
-                          {question.question}
-                        </h3>
-                      </div>
-                    </div>
 
-                    {/* Options Grid */}
-                    <div className="flex flex-wrap gap-4">
-                      {question.options.map((option, optionIndex) => (
-                        <div
-                          key={optionIndex}
-                          className="bg-gray-700/60 rounded-xl p-4 border border-gray-600 hover:border-blue-400 transition-colors shadow-sm"
-                          style={{ minWidth: "200px", flexBasis: "auto" }}
-                        >
-                          <div className="flex items-start space-x-3">
-                            {/* Simple Option Label */}
-                            <div className="flex-shrink-0">
-                              <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center border border-gray-500">
-                                <span className="text-sm font-bold text-gray-200 uppercase">
-                                  {optionLabels[optionIndex]}
+                      {/* Options Grid */}
+                      <div className="flex flex-wrap gap-4">
+                        {question.options.map((option, optionIndex) => (
+                          <div
+                            key={optionIndex}
+                            className="bg-gray-700/60 rounded-xl p-4 border border-gray-600 hover:border-blue-400 transition-colors shadow-sm"
+                            style={{ minWidth: "200px", flexBasis: "auto" }}
+                          >
+                            <div className="flex items-start space-x-3">
+                              {/* Simple Option Label */}
+                              <div className="flex-shrink-0">
+                                <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center border border-gray-500">
+                                  <span className="text-sm font-bold text-gray-200 uppercase">
+                                    {optionLabels[optionIndex]}
+                                  </span>
+                                </div>
+                              </div>
+                              {/* Option Text */}
+                              <div className="flex-1">
+                                <span className="text-gray-200 font-medium leading-relaxed">
+                                  {option}
                                 </span>
                               </div>
                             </div>
-                            {/* Option Text */}
-                            <div className="flex-1">
-                              <span className="text-gray-200 font-medium leading-relaxed">
-                                {option}
-                              </span>
-                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
+            ))}
+          </div>
+
+          {/* Finish Test Button */}
+          <div className="mt-12 mb-8">
+            <div className="flex justify-center">
+              <button
+                onClick={handleFinishTest}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-12 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              >
+                <div className="flex items-center space-x-3">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span className="text-xl">Finish Test</span>
+                </div>
+              </button>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -194,7 +240,18 @@ const AssessmentView = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Confirmation Prompt */}
+      <Prompt
+        isOpen={showFinishPrompt}
+        title="Finish Test?"
+        message="Are you sure you want to finish the test? This action cannot be undone and you'll be taken back to the home page."
+        confirmText="Yes, Finish Test"
+        cancelText="Cancel"
+        onConfirm={handleConfirmFinish}
+        onCancel={handleCancelFinish}
+      />
+    </>
   );
 };
 
