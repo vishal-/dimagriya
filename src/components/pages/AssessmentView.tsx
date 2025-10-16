@@ -106,7 +106,7 @@ const AssessmentView = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700/50">
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-8 shadow-xl border-2 border-white/20">
               <div className="text-center">
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent mb-4">
                   {assessment.title}
@@ -122,36 +122,36 @@ const AssessmentView = () => {
             {assessment.sections.map((section, sectionIndex) => (
               <div key={sectionIndex} className="mb-12">
                 {/* Section Header */}
-                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-8 shadow-xl border-2 border-white/20">
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent text-center drop-shadow-lg">
+                <div className="bg-zinc-900 rounded-2xl p-6 mb-8 shadow-md border border-gray-700/30">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent text-center drop-shadow-lg">
                     {section.name}
                   </h2>
                 </div>
 
-                <div className="space-y-8">
+                <div className="space-y-12">
                   {section.questions.map((question) => (
                     <div
                       key={question.id}
-                      className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-md"
+                      className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-300/50 shadow-md"
                     >
                       {/* Question Header with Large Number */}
-                      <div className="flex items-start space-x-4 mb-6">
+                      <div className="flex items-start space-x-5 mb-9">
                         <div className="flex-shrink-0">
                           <div className="ms-3">
-                            <span className="text-2xl text-yellow-300 font-bold text-white">
+                            <span className="text-3xl text-yellow-300 font-bold text-white">
                               {question.id}&#160;&#45;
                             </span>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-100 leading-relaxed">
+                          <h3 className="text-2xl text-gray-100 leading-relaxed">
                             {question.question}
                           </h3>
                         </div>
                       </div>
 
                       {/* Options Grid */}
-                      <div className="flex flex-wrap gap-4">
+                      <div className="flex flex-wrap gap-4 justify-center">
                         {question.options.map((option, optionIndex) => (
                           <div
                             key={optionIndex}
@@ -169,7 +169,7 @@ const AssessmentView = () => {
                               </div>
                               {/* Option Text */}
                               <div className="flex-1">
-                                <span className="text-gray-200 font-medium leading-relaxed">
+                                <span className="text-gray-200 text-xl leading-relaxed">
                                   {option}
                                 </span>
                               </div>
