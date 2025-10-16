@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Admin from "../pages/Admin";
 import AdminAssessments from "../pages/AdminAssessments";
+import AdminAnswersList from "../pages/AdminAnswersList";
+import AdminAnswersView from "../pages/AdminAnswersView";
 import Student from "../pages/Student";
 import AssessmentView from "../pages/AssessmentView";
 // import Navigation from "../common/Navigation";
@@ -30,6 +32,22 @@ const Container = () => {
           element={
             <AuthGuard>
               <AdminAssessments />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/admin/answers"
+          element={
+            <AuthGuard>
+              <AdminAnswersList />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/admin/answers/:id"
+          element={
+            <AuthGuard>
+              <AdminAnswersView />
             </AuthGuard>
           }
         />
