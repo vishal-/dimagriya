@@ -10,4 +10,6 @@ export default defineConfig({
       plugins: [tailwindcss()],
     },
   },
+  // Base path for GitHub Pages deployment (change if not at root)
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
 })
