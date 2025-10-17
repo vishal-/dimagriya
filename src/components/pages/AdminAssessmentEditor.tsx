@@ -113,6 +113,25 @@ const AdminAssessmentEditor = () => {
     if (!assessment) return;
 
     try {
+      // Handle section name editing
+      if (field.startsWith("section_") && field.endsWith("_name")) {
+        const sectionIdx = parseInt(field.split("_")[1]);
+        const updatedSections = [...assessment.sections];
+        updatedSections[sectionIdx].name = value as string;
+
+        const { error } = await supabase
+          .from("assessments")
+          .update({ sections: updatedSections })
+          .eq("id", assessment.id);
+
+        if (error) throw error;
+
+        setAssessment({ ...assessment, sections: updatedSections });
+        setEditingField(null);
+        return;
+      }
+
+      // Handle regular field editing
       const updateData: Record<string, string | number> = {};
       updateData[field] = value;
 
@@ -348,9 +367,16 @@ const AdminAssessmentEditor = () => {
                         <h3 className="text-xl font-bold text-gray-100">
                           {section.name}
                         </h3>
-                        <span className="bg-gray-600 text-gray-300 px-2 py-1 rounded text-sm">
-                          {section.questions.length} questions
-                        </span>
+                        <button
+                          onClick={() => {
+                            setEditingField(`section_${sectionIdx}_name`);
+                            setEditValue(section.name);
+                          }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded bg-blue-600 hover:bg-blue-700 transition-colors"
+                          title="Edit section name"
+                        >
+                          <FaEdit className="w-3 h-3 text-white flex-shrink-0" />
+                        </button>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -486,6 +512,19 @@ const AdminAssessmentEditor = () => {
         value={editValue}
         type="number"
         onSave={(value) => handleSaveField("total_questions", value)}
+        onClose={() => setEditingField(null)}
+      />
+
+      <EditModal
+        isOpen={
+          (editingField?.startsWith("section_") &&
+            editingField?.endsWith("_name")) ||
+          false
+        }
+        title="Section Name"
+        fieldName="Section Name"
+        value={editValue}
+        onSave={(value) => handleSaveField(editingField!, value)}
         onClose={() => setEditingField(null)}
       />
 
