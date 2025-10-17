@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import type { Assessment } from "../../types/assessment";
+import type { Assessment, Problem } from "../../types/assessment";
 import { Modal, Alert } from "../ui";
 import supabase from "../../utils/supabase";
 
@@ -75,6 +75,13 @@ const AdminAssessmentEditor = () => {
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string | number>("");
+  const [editingQuestion, setEditingQuestion] = useState<{
+    sectionIdx: number;
+    questionIdx: number;
+  } | null>(null);
+  const [editQuestionData, setEditQuestionData] = useState<Partial<Problem>>(
+    {}
+  );
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -120,6 +127,42 @@ const AdminAssessmentEditor = () => {
     } catch (error) {
       console.error("Error saving field:", error);
       setAlertMessage("Failed to save changes. Please try again.");
+      setAlertOpen(true);
+    }
+  };
+
+  const handleEditQuestion = (sectionIdx: number, questionIdx: number) => {
+    const question = assessment?.sections[sectionIdx]?.questions[questionIdx];
+    if (question) {
+      setEditingQuestion({ sectionIdx, questionIdx });
+      setEditQuestionData({ ...question });
+    }
+  };
+
+  const handleSaveQuestion = async () => {
+    if (!assessment || !editingQuestion) return;
+
+    try {
+      const { sectionIdx, questionIdx } = editingQuestion;
+      const updatedSections = [...assessment.sections];
+      updatedSections[sectionIdx].questions[questionIdx] = {
+        ...updatedSections[sectionIdx].questions[questionIdx],
+        ...editQuestionData
+      };
+
+      const { error } = await supabase
+        .from("assessments")
+        .update({ sections: updatedSections })
+        .eq("id", assessment.id);
+
+      if (error) throw error;
+
+      setAssessment({ ...assessment, sections: updatedSections });
+      setEditingQuestion(null);
+      setEditQuestionData({});
+    } catch (error) {
+      console.error("Error saving question:", error);
+      setAlertMessage("Failed to save question. Please try again.");
       setAlertOpen(true);
     }
   };
@@ -282,34 +325,99 @@ const AdminAssessmentEditor = () => {
               </div>
             </div>
 
-            {/* Sections Summary */}
+            {/* Sections with Questions */}
             <div className="pt-4">
-              <h2 className="text-2xl font-bold text-gray-100 mb-4">
-                Sections ({assessment.sections.length})
+              <h2 className="text-2xl font-bold text-gray-100 mb-6">
+                Sections & Questions ({assessment.sections.length} sections,{" "}
+                {assessment.total_questions} questions)
               </h2>
-              <div className="space-y-3">
-                {assessment.sections.map((section, idx) => (
+              <div className="space-y-6">
+                {assessment.sections.map((section, sectionIdx) => (
                   <div
-                    key={idx}
-                    className="bg-gray-700/50 rounded-lg p-4 border border-gray-600"
+                    key={sectionIdx}
+                    className="bg-gray-700/50 rounded-xl p-6 border border-gray-600"
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-bold text-gray-100">
+                    {/* Section Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-xl font-bold text-gray-100">
                           {section.name}
                         </h3>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <span className="bg-gray-600 text-gray-300 px-2 py-1 rounded text-sm">
                           {section.questions.length} questions
-                        </p>
+                        </span>
                       </div>
-                      <button
-                        onClick={() =>
-                          navigate(`/admin/assessment/${id}/section/${idx}`)
-                        }
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-semibold transition-colors"
-                      >
-                        Edit Section
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/admin/assessment/${id}/section/${sectionIdx}`
+                            )
+                          }
+                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                        >
+                          Edit Section
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Questions */}
+                    <div className="space-y-4">
+                      {section.questions.map((question, questionIdx) => (
+                        <div
+                          key={question.id}
+                          className="bg-gray-800/50 rounded-lg p-4 border border-gray-600"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                                  Q{questionIdx + 1}
+                                </span>
+                                <span className="text-sm text-gray-400">
+                                  ID: {question.id}
+                                </span>
+                              </div>
+                              <p className="text-gray-100 font-medium mb-3">
+                                {question.question}
+                              </p>
+
+                              {/* Options */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                                {question.options.map((option, optionIdx) => (
+                                  <div
+                                    key={optionIdx}
+                                    className={`p-2 rounded text-sm ${
+                                      option === question.answer
+                                        ? "bg-green-600/20 border border-green-500 text-green-300"
+                                        : "bg-gray-700/50 text-gray-300"
+                                    }`}
+                                  >
+                                    <span className="font-semibold mr-2">
+                                      {String.fromCharCode(65 + optionIdx)}.
+                                    </span>
+                                    {option}
+                                    {option === question.answer && (
+                                      <span className="ml-2 text-green-400 font-semibold">
+                                        ✓ Correct
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() =>
+                                handleEditQuestion(sectionIdx, questionIdx)
+                              }
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors ml-4"
+                            >
+                              Edit Question
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -373,6 +481,101 @@ const AdminAssessmentEditor = () => {
         onSave={(value) => handleSaveField("total_questions", value)}
         onClose={() => setEditingField(null)}
       />
+
+      {/* Question Edit Modal */}
+      <Modal
+        isOpen={editingQuestion !== null}
+        onClose={() => {
+          setEditingQuestion(null);
+          setEditQuestionData({});
+        }}
+        title="Edit Question"
+        size="xl"
+      >
+        <div className="space-y-6">
+          {/* Question Text */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
+              Question
+            </label>
+            <textarea
+              value={editQuestionData.question || ""}
+              onChange={(e) =>
+                setEditQuestionData((prev) => ({
+                  ...prev,
+                  question: e.target.value
+                }))
+              }
+              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-gray-100 focus:outline-none focus:border-blue-500 min-h-[100px] resize-vertical"
+              placeholder="Enter the question text..."
+            />
+          </div>
+
+          {/* Options */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-3">
+              Options
+            </label>
+            <div className="space-y-3">
+              {(editQuestionData.options || []).map((option, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <span className="bg-gray-600 text-gray-300 px-3 py-2 rounded font-semibold min-w-[40px] text-center">
+                    {String.fromCharCode(65 + idx)}
+                  </span>
+                  <input
+                    type="text"
+                    value={option}
+                    onChange={(e) => {
+                      const newOptions = [...(editQuestionData.options || [])];
+                      newOptions[idx] = e.target.value;
+                      setEditQuestionData((prev) => ({
+                        ...prev,
+                        options: newOptions
+                      }));
+                    }}
+                    className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 focus:outline-none focus:border-blue-500"
+                    placeholder={`Option ${String.fromCharCode(65 + idx)}`}
+                  />
+                  <input
+                    type="radio"
+                    name="correct-answer"
+                    checked={option === editQuestionData.answer}
+                    onChange={() =>
+                      setEditQuestionData((prev) => ({
+                        ...prev,
+                        answer: option
+                      }))
+                    }
+                    className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-400 mt-2">
+              Select the radio button next to the correct answer
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => {
+                setEditingQuestion(null);
+                setEditQuestionData({});
+              }}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-100 font-semibold py-3 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveQuestion}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
+            >
+              Save Question
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Error Alert */}
       <Alert
