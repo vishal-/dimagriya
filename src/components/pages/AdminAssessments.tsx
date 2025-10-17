@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
-import type { Assessment } from '../../types/assessment';
-import AssessmentForm from '../forms/AssessmentForm';
-import supabase from '../../utils/supabase';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import type { Assessment } from "../../types/assessment";
+import AssessmentForm from "../forms/AssessmentForm";
+import supabase from "../../utils/supabase";
 
 const AdminAssessments = () => {
   const [showForm, setShowForm] = useState(false);
-  const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<Assessment | null>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,16 +21,16 @@ const AdminAssessments = () => {
       const to = from + itemsPerPage - 1;
 
       const { data, error, count } = await supabase
-        .from('assessments')
-        .select('*', { count: 'exact' })
-        .order('updated_at', { ascending: false })
+        .from("assessments")
+        .select("*", { count: "exact" })
+        .order("updated_at", { ascending: false })
         .range(from, to);
 
       if (error) throw error;
       setAssessments(data || []);
       setTotalCount(count || 0);
     } catch (error) {
-      console.error('Error fetching assessments:', error);
+      console.error("Error fetching assessments:", error);
     } finally {
       setLoading(false);
     }
@@ -50,25 +52,25 @@ const AdminAssessments = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold text-gray-100">Assessments</h1>
-            <button 
+            <button
               onClick={() => {
                 setShowForm(!showForm);
                 setSelectedAssessment(null);
               }}
               className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
             >
-              {showForm ? 'Cancel' : 'Create Assessment'}
+              {showForm ? "Cancel" : "Create Assessment"}
             </button>
           </div>
 
           {showForm ? (
-            <AssessmentForm 
+            <AssessmentForm
               assessment={selectedAssessment || undefined}
               onSave={() => {
                 setShowForm(false);
                 setSelectedAssessment(null);
                 fetchAssessments(currentPage);
-              }} 
+              }}
             />
           ) : (
             <div className="space-y-6">
@@ -81,7 +83,9 @@ const AdminAssessments = () => {
               ) : assessments.length === 0 ? (
                 <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-700/50">
                   <div className="text-center py-12">
-                    <p className="text-gray-400 text-lg">No assessments found</p>
+                    <p className="text-gray-400 text-lg">
+                      No assessments found
+                    </p>
                     <p className="text-gray-500 text-sm mt-2">
                       Create your first assessment to get started
                     </p>
@@ -91,30 +95,44 @@ const AdminAssessments = () => {
                 <>
                   <div className="grid gap-4">
                     {assessments.map((assessment) => (
-                      <div 
-                        key={assessment.id} 
-                        onClick={() => {
-                          setSelectedAssessment(assessment);
-                          setShowForm(true);
-                        }}
-                        className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-700/50 hover:shadow-2xl transition-all cursor-pointer"
+                      <div
+                        key={assessment.id}
+                        className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-700/50 hover:shadow-2xl transition-all"
                       >
                         <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-100 mb-2">{assessment.title}</h3>
-                            <p className="text-gray-400 mb-2">Grade {assessment.grade} • {assessment.subject}</p>
-                            <p className="text-gray-500 text-sm">{assessment.total_questions} questions</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-gray-500 text-xs">
-                              Updated: {assessment.updated_at ? new Date(assessment.updated_at).toLocaleDateString() : 'N/A'}
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-100 mb-2">
+                              {assessment.title}
+                            </h3>
+                            <p className="text-gray-400 mb-2">
+                              Grade {assessment.grade} • {assessment.subject}
                             </p>
+                            <p className="text-gray-500 text-sm">
+                              {assessment.total_questions} questions
+                            </p>
+                          </div>
+                          <div className="flex flex-col gap-2 ml-4">
+                            <Link
+                              to={`/admin/assessment/${assessment.id}`}
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm whitespace-nowrap"
+                            >
+                              Edit Assessment
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setSelectedAssessment(assessment);
+                                setShowForm(true);
+                              }}
+                              className="bg-gray-700 hover:bg-gray-600 text-gray-100 px-4 py-2 rounded-lg font-semibold transition-colors text-sm whitespace-nowrap"
+                            >
+                              Quick Edit
+                            </button>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  
+
                   {totalPages > 1 && (
                     <div className="flex justify-center items-center space-x-2">
                       <button
@@ -124,11 +142,11 @@ const AdminAssessments = () => {
                       >
                         Previous
                       </button>
-                      
+
                       <span className="text-gray-400">
                         Page {currentPage} of {totalPages}
                       </span>
-                      
+
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
