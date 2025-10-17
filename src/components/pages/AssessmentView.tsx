@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Assessment } from "../../types/assessment";
 import supabase from "../../utils/supabase";
-import Prompt from "../common/Prompt";
+import { Prompt } from "../ui";
 
 const AssessmentView = () => {
   const { id } = useParams<{ id: string }>();

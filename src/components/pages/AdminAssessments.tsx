@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaEdit, FaCog, FaTrash } from "react-icons/fa";
 import type { Assessment } from "../../types/assessment";
 import AssessmentForm from "../forms/AssessmentForm";
-import { Modal, Alert } from "../ui";
+import { Alert, Prompt } from "../ui";
 import supabase from "../../utils/supabase";
 
 const AdminAssessments = () => {
@@ -222,42 +222,19 @@ const AdminAssessments = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
+      {/* Delete Confirmation Prompt */}
+      <Prompt
         isOpen={deleteConfirmOpen}
-        onClose={() => {
+        title="Delete Assessment"
+        message={`Are you sure you want to delete "${assessmentToDelete?.title}"? This action cannot be undone and all associated data will be permanently deleted.`}
+        confirmText={deleting ? "Deleting..." : "Delete"}
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
           if (!deleting) setDeleteConfirmOpen(false);
         }}
-        title="Delete Assessment"
-        size="md"
-      >
-        <div className="mb-6">
-          <p className="text-gray-300 mb-2">
-            Are you sure you want to delete{" "}
-            <strong>{assessmentToDelete?.title}</strong>?
-          </p>
-          <p className="text-sm text-gray-400">
-            This action cannot be undone. All associated data will be
-            permanently deleted.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setDeleteConfirmOpen(false)}
-            disabled={deleting}
-            className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-100 font-semibold py-2 rounded-lg transition-colors disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirmDelete}
-            disabled={deleting}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {deleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
-      </Modal>
+        variant="danger"
+      />
 
       {/* Error Alert */}
       <Alert
