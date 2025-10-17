@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaEdit, FaCog, FaTrash } from "react-icons/fa";
 import type { Assessment } from "../../types/assessment";
 import AssessmentForm from "../forms/AssessmentForm";
-import { Modal } from "../ui";
+import { Modal, Alert } from "../ui";
 import supabase from "../../utils/supabase";
 
 const AdminAssessments = () => {
@@ -18,6 +18,8 @@ const AdminAssessments = () => {
   const [assessmentToDelete, setAssessmentToDelete] =
     useState<Assessment | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const itemsPerPage = 10;
 
   const fetchAssessments = async (page: number) => {
@@ -72,7 +74,8 @@ const AdminAssessments = () => {
       fetchAssessments(currentPage);
     } catch (error) {
       console.error("Error deleting assessment:", error);
-      alert("Failed to delete assessment");
+      setAlertMessage("Failed to delete assessment. Please try again.");
+      setAlertOpen(true);
     } finally {
       setDeleting(false);
     }
@@ -255,6 +258,15 @@ const AdminAssessments = () => {
           </button>
         </div>
       </Modal>
+
+      {/* Error Alert */}
+      <Alert
+        isOpen={alertOpen}
+        title="Error"
+        message={alertMessage}
+        onClose={() => setAlertOpen(false)}
+        variant="error"
+      />
     </div>
   );
 };

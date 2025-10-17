@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import type { Assessment } from "../../types/assessment";
-import { Modal } from "../ui";
+import { Modal, Alert } from "../ui";
 import supabase from "../../utils/supabase";
 
 // Edit modal for different field types
@@ -75,6 +75,8 @@ const AdminAssessmentEditor = () => {
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string | number>("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const fetchAssessment = useCallback(async () => {
     if (!id) return;
@@ -117,7 +119,8 @@ const AdminAssessmentEditor = () => {
       setEditingField(null);
     } catch (error) {
       console.error("Error saving field:", error);
-      alert("Failed to save changes");
+      setAlertMessage("Failed to save changes. Please try again.");
+      setAlertOpen(true);
     }
   };
 
@@ -369,6 +372,15 @@ const AdminAssessmentEditor = () => {
         type="number"
         onSave={(value) => handleSaveField("total_questions", value)}
         onClose={() => setEditingField(null)}
+      />
+
+      {/* Error Alert */}
+      <Alert
+        isOpen={alertOpen}
+        title="Error"
+        message={alertMessage}
+        onClose={() => setAlertOpen(false)}
+        variant="error"
       />
     </div>
   );
