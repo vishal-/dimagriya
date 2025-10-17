@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import type { Assessment } from "../../types/assessment";
+import { Modal } from "../ui";
 import supabase from "../../utils/supabase";
 
-// Edit modals for different field types
+// Edit modal for different field types
 interface EditModalProps {
   isOpen: boolean;
   title: string;
@@ -35,44 +36,35 @@ const EditModal = ({
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div className="relative bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 border border-gray-700">
-        <h3 className="text-2xl font-bold text-gray-100 mb-4">Edit {title}</h3>
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-300 mb-2">
-            {fieldName}
-          </label>
-          <input
-            type={type}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 focus:outline-none focus:border-blue-500"
-            autoFocus
-          />
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-100 font-semibold py-2 rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
-          >
-            Save
-          </button>
-        </div>
+    <Modal isOpen={isOpen} onClose={onClose} title={`Edit ${title}`} size="md">
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-300 mb-2">
+          {fieldName}
+        </label>
+        <input
+          type={type}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 focus:outline-none focus:border-blue-500"
+          autoFocus
+        />
       </div>
-    </div>
+      <div className="flex gap-3">
+        <button
+          onClick={onClose}
+          className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-100 font-semibold py-2 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSave}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
+        >
+          Save
+        </button>
+      </div>
+    </Modal>
   );
 };
 
