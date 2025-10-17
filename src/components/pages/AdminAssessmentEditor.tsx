@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { FaEdit, FaCog, FaPencilAlt } from "react-icons/fa";
 import type { Assessment, Problem } from "../../types/assessment";
 import { Modal, Alert } from "../ui";
 import supabase from "../../utils/supabase";
@@ -249,9 +250,10 @@ const AdminAssessmentEditor = () => {
                     setEditingField("title");
                     setEditValue(assessment.title);
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
+                  title="Edit title"
                 >
-                  Edit
+                  <FaEdit className="w-4 h-4 text-white flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -272,9 +274,10 @@ const AdminAssessmentEditor = () => {
                     setEditingField("grade");
                     setEditValue(assessment.grade);
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
+                  title="Edit grade"
                 >
-                  Edit
+                  <FaEdit className="w-4 h-4 text-white flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -295,9 +298,10 @@ const AdminAssessmentEditor = () => {
                     setEditingField("subject");
                     setEditValue(assessment.subject);
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
+                  title="Edit subject"
                 >
-                  Edit
+                  <FaEdit className="w-4 h-4 text-white flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -318,9 +322,10 @@ const AdminAssessmentEditor = () => {
                     setEditingField("total_questions");
                     setEditValue(assessment.total_questions);
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
+                  title="Edit total questions"
                 >
-                  Edit
+                  <FaEdit className="w-4 h-4 text-white flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -354,9 +359,10 @@ const AdminAssessmentEditor = () => {
                               `/admin/assessment/${id}/section/${sectionIdx}`
                             )
                           }
-                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors"
+                          title="Edit section"
                         >
-                          Edit Section
+                          <FaCog className="w-4 h-4 text-white flex-shrink-0" />
                         </button>
                       </div>
                     </div>
@@ -411,9 +417,10 @@ const AdminAssessmentEditor = () => {
                               onClick={() =>
                                 handleEditQuestion(sectionIdx, questionIdx)
                               }
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors ml-4"
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors ml-4"
+                              title="Edit question"
                             >
-                              Edit Question
+                              <FaPencilAlt className="w-4 h-4 text-white flex-shrink-0" />
                             </button>
                           </div>
                         </div>
