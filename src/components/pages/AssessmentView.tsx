@@ -129,7 +129,7 @@ const AssessmentView = () => {
                 <div key={sectionIndex} className="mb-12">
                   {/* Section Header */}
                   <div className="bg-zinc-900 rounded-2xl p-6 mb-8 shadow-md border border-gray-700/30">
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent text-center drop-shadow-lg">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent text-center drop-shadow-lg">
                       {section.name}
                     </h2>
                   </div>
