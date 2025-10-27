@@ -119,69 +119,81 @@ const AssessmentView = () => {
               </div>
             </div>
 
-            {assessment.sections.map((section, sectionIndex) => (
-              <div key={sectionIndex} className="mb-12">
-                {/* Section Header */}
-                <div className="bg-zinc-900 rounded-2xl p-6 mb-8 shadow-md border border-gray-700/30">
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent text-center drop-shadow-lg">
-                    {section.name}
-                  </h2>
-                </div>
+            {assessment.sections.map((section, sectionIndex) => {
+              // Calculate the starting question number for this section
+              const questionsBeforeThisSection = assessment.sections
+                .slice(0, sectionIndex)
+                .reduce((total, sec) => total + sec.questions.length, 0);
 
-                <div className="space-y-12">
-                  {section.questions.map((question) => (
-                    <div
-                      key={question.id}
-                      className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-300/50 shadow-md"
-                    >
-                      {/* Question Header with Large Number */}
-                      <div className="flex items-start space-x-5 mb-9">
-                        <div className="flex-shrink-0">
-                          <div className="ms-3">
-                            <span className="text-3xl text-yellow-300 font-bold text-white">
-                              {question.id}&#160;&#45;
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-2xl text-gray-100 leading-relaxed">
-                            {question.question}
-                          </h3>
-                        </div>
-                      </div>
+              return (
+                <div key={sectionIndex} className="mb-12">
+                  {/* Section Header */}
+                  <div className="bg-zinc-900 rounded-2xl p-6 mb-8 shadow-md border border-gray-700/30">
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent text-center drop-shadow-lg">
+                      {section.name}
+                    </h2>
+                  </div>
 
-                      {/* Options Grid */}
-                      <div className="flex flex-wrap gap-4 justify-center">
-                        {question.options.map((option, optionIndex) => (
-                          <div
-                            key={optionIndex}
-                            className="bg-gray-700/60 rounded-xl p-4 border border-gray-600 hover:border-blue-400 transition-colors shadow-sm"
-                            style={{ minWidth: "200px", flexBasis: "auto" }}
-                          >
-                            <div className="flex items-start space-x-3">
-                              {/* Simple Option Label */}
-                              <div className="flex-shrink-0">
-                                <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center border border-gray-500">
-                                  <span className="text-sm font-bold text-gray-200 uppercase">
-                                    {optionLabels[optionIndex]}
-                                  </span>
-                                </div>
-                              </div>
-                              {/* Option Text */}
-                              <div className="flex-1">
-                                <span className="text-gray-200 text-xl leading-relaxed">
-                                  {option}
+                  <div className="space-y-12">
+                    {section.questions.map((question, questionIndex) => {
+                      const questionNumber =
+                        questionsBeforeThisSection + questionIndex + 1;
+
+                      return (
+                        <div
+                          key={question.id}
+                          className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-300/50 shadow-md"
+                        >
+                          {/* Question Header with Large Number */}
+                          <div className="flex items-start space-x-5 mb-9">
+                            <div className="flex-shrink-0">
+                              <div className="ms-3">
+                                <span className="text-3xl text-yellow-300 font-bold text-white">
+                                  {questionNumber}&#160;&#45;
                                 </span>
                               </div>
                             </div>
+                            <div className="flex-1">
+                              <h3 className="text-2xl text-gray-100 leading-relaxed">
+                                {question.question}
+                              </h3>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+
+                          {/* Options Grid */}
+                          <div className="flex flex-wrap gap-4 justify-center">
+                            {question.options.map((option, optionIndex) => (
+                              <div
+                                key={optionIndex}
+                                className="bg-gray-700/60 rounded-xl p-4 border border-gray-600 hover:border-blue-400 transition-colors shadow-sm"
+                                style={{ minWidth: "200px", flexBasis: "auto" }}
+                              >
+                                <div className="flex items-start space-x-3">
+                                  {/* Simple Option Label */}
+                                  <div className="flex-shrink-0">
+                                    <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center border border-gray-500">
+                                      <span className="text-sm font-bold text-gray-200 uppercase">
+                                        {optionLabels[optionIndex]}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  {/* Option Text */}
+                                  <div className="flex-1">
+                                    <span className="text-gray-200 text-xl leading-relaxed">
+                                      {option}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Finish Test Button */}
