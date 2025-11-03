@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaEdit, FaCog, FaPencilAlt } from "react-icons/fa";
 import type { Assessment, Problem } from "../../types/assessment";
 import { Modal, Alert } from "../ui";
+import AdminHeader from "../common/AdminHeader";
 import supabase from "../../utils/supabase";
 
 // Edit modal for different field types
@@ -223,6 +224,7 @@ const AdminAssessmentEditor = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <AdminHeader />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Header */}

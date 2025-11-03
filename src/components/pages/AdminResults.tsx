@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import type { Attempt } from "../../types/Attempt";
 import type { Assessment } from "../../types/assessment";
+import AdminHeader from "../common/AdminHeader";
 import supabase from "../../utils/supabase";
 
 interface AttemptWithAssessment extends Attempt {
@@ -118,6 +119,7 @@ const AdminResults = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <AdminHeader />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -130,12 +132,6 @@ const AdminResults = () => {
                 View and analyze student assessment attempts and performance
               </p>
             </div>
-            <Link
-              to="/admin"
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Back to Admin
-            </Link>
           </div>
 
           {/* Attempts List */}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import type { Assessment } from "../../types/assessment";
+import AdminHeader from "../common/AdminHeader";
 import supabase from "../../utils/supabase";
 
 const AdminAnswersView = () => {
@@ -106,6 +107,7 @@ const AdminAnswersView = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <AdminHeader />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
