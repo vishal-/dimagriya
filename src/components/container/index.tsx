@@ -5,6 +5,7 @@ import AdminAssessments from "../pages/AdminAssessments";
 import AdminAssessmentEditor from "../pages/AdminAssessmentEditor";
 import AdminAnswersList from "../pages/AdminAnswersList";
 import AdminAnswersView from "../pages/AdminAnswersView";
+import AdminResults from "../pages/AdminResults";
 import Student from "../pages/Student";
 import AttemptAssessment from "../pages/AttemptAssessment";
 import TakeAssessment from "../pages/TakeAssessment";
@@ -55,6 +56,14 @@ const Container = () => {
           element={
             <AuthGuard>
               <AdminAnswersList />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/admin/results"
+          element={
+            <AuthGuard>
+              <AdminResults />
             </AuthGuard>
           }
         />

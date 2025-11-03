@@ -2,6 +2,7 @@
 export interface Attempt {
     id: string;
     assessment_id: string;
+    student: string; // Student name
     status: 'in_progress' | 'completed' | 'abandoned';
     started_at: string;
     ended_at?: string;

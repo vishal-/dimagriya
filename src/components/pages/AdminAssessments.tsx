@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEdit, FaCog, FaTrash } from "react-icons/fa";
 import type { Assessment } from "../../types/assessment";
 import AssessmentForm from "../forms/AssessmentForm";
@@ -7,6 +7,7 @@ import { Alert, Prompt } from "../ui";
 import supabase from "../../utils/supabase";
 
 const AdminAssessments = () => {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [selectedAssessment, setSelectedAssessment] =
     useState<Assessment | null>(null);
@@ -89,15 +90,23 @@ const AdminAssessments = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold text-gray-100">Assessments</h1>
-            <button
-              onClick={() => {
-                setShowForm(!showForm);
-                setSelectedAssessment(null);
-              }}
-              className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
-            >
-              {showForm ? "Cancel" : "Create Assessment"}
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate("/admin")}
+                className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+              >
+                Back to Admin
+              </button>
+              <button
+                onClick={() => {
+                  setShowForm(!showForm);
+                  setSelectedAssessment(null);
+                }}
+                className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+              >
+                {showForm ? "Cancel" : "Create Assessment"}
+              </button>
+            </div>
           </div>
 
           {showForm ? (
