@@ -24,7 +24,7 @@ const Container = () => {
         <Route path="/" element={<Home />} />
         <Route path="/student" element={<Student />} />
         <Route path="/attempt/:id" element={<AttemptAssessment />} />
-        <Route path="/attempt/:id/:attemptId" element={<TakeAssessment />} />
+        <Route path="/evaluate/:attemptId" element={<TakeAssessment />} />
         <Route path="/result/:attemptId" element={<Results />} />
         <Route path="/assessment/:id" element={<AssessmentView />} />
         <Route

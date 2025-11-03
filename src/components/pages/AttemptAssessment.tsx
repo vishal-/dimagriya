@@ -50,7 +50,7 @@ const AttemptAssessment = () => {
       if (error) throw error;
 
       // Navigate with attempt ID
-      navigate(`/attempt/${id}/${attempt.id}`);
+      navigate(`/evaluate/${attempt.id}`);
     } catch (error) {
       console.error("Failed to start assessment:", error);
       // Show error to user

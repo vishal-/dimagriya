@@ -7,10 +7,7 @@ import supabase from "../../utils/supabase";
 import { Prompt } from "../ui";
 
 const TakeAssessment = () => {
-  const { id: assessmentId, attemptId } = useParams<{
-    id: string;
-    attemptId: string;
-  }>();
+  const { attemptId } = useParams<{ attemptId: string }>();
   const navigate = useNavigate();
 
   const [assessment, setAssessment] = useState<Assessment | null>(null);
@@ -37,19 +34,10 @@ const TakeAssessment = () => {
   );
 
   const fetchData = useCallback(async () => {
-    if (!assessmentId || !attemptId) return;
+    if (!attemptId) return;
 
     try {
-      // Fetch assessment
-      const { data: assessmentData, error: assessmentError } = await supabase
-        .from("assessments")
-        .select("*")
-        .eq("id", assessmentId)
-        .single();
-
-      if (assessmentError) throw assessmentError;
-
-      // Fetch attempt
+      // Fetch attempt first
       const { data: attemptData, error: attemptError } = await supabase
         .from("attempts")
         .select("*")
@@ -57,6 +45,15 @@ const TakeAssessment = () => {
         .single();
 
       if (attemptError) throw attemptError;
+
+      // Fetch assessment using assessment_id from attempt
+      const { data: assessmentData, error: assessmentError } = await supabase
+        .from("assessments")
+        .select("*")
+        .eq("id", attemptData.assessment_id)
+        .single();
+
+      if (assessmentError) throw assessmentError;
 
       setAssessment(assessmentData);
       setAttempt(attemptData);
@@ -78,7 +75,7 @@ const TakeAssessment = () => {
     } finally {
       setLoading(false);
     }
-  }, [assessmentId, attemptId]);
+  }, [attemptId]);
 
   useEffect(() => {
     fetchData();
