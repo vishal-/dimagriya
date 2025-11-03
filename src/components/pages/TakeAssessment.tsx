@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaClock, FaChevronLeft, FaChevronRight, FaFlag } from "react-icons/fa";
 import type { Assessment } from "../../types/assessment";
-import type { Attempt } from "../../types/Attempt";
+import type { Attempt, Response } from "../../types/Attempt";
 import supabase from "../../utils/supabase";
 import { Prompt } from "../ui";
 
@@ -14,7 +14,7 @@ const TakeAssessment = () => {
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [responses, setResponses] = useState<Record<string, string>>({});
+  const [responses, setResponses] = useState<Record<string, Response>>({});
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showFinishPrompt, setShowFinishPrompt] = useState(false);
 
@@ -124,9 +124,16 @@ const TakeAssessment = () => {
   };
 
   const handleAnswerSelect = async (answer: string) => {
+    const isCorrect = answer === currentQuestion.answer;
+    const response: Response = {
+      question: currentQuestion.question,
+      answer: answer,
+      isCorrect: isCorrect
+    };
+
     const newResponses = {
       ...responses,
-      [currentQuestionIndex.toString()]: answer
+      [currentQuestionIndex.toString()]: response
     };
     setResponses(newResponses);
 
@@ -161,8 +168,9 @@ const TakeAssessment = () => {
     try {
       // Calculate final score
       let correctAnswers = 0;
-      allQuestions.forEach((question, index) => {
-        if (responses[index.toString()] === question.answer) {
+      allQuestions.forEach((_, index) => {
+        const response = responses[index.toString()];
+        if (response && response.isCorrect) {
           correctAnswers++;
         }
       });
@@ -272,9 +280,14 @@ const TakeAssessment = () => {
               <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 border border-amber-300/50 shadow-md">
                 {/* Question */}
                 <div className="mb-8">
-                  <h2 className="text-2xl text-gray-100 leading-relaxed mb-6">
-                    {currentQuestion.question}
-                  </h2>
+                  <div className="flex items-start space-x-4 mb-4">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-xl font-bold min-w-[60px] text-center">
+                      {currentQuestionIndex + 1}
+                    </span>
+                    <h2 className="text-2xl text-gray-100 leading-relaxed font-bold flex-1">
+                      {currentQuestion.question}
+                    </h2>
+                  </div>
                 </div>
 
                 {/* Options */}
@@ -282,34 +295,52 @@ const TakeAssessment = () => {
                   {currentQuestion.options.map((option, optionIndex) => (
                     <div
                       key={optionIndex}
-                      onClick={() => handleAnswerSelect(option)}
-                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                        responses[currentQuestionIndex.toString()] === option
-                          ? "bg-blue-600/20 border-blue-500 text-blue-300"
-                          : "bg-gray-700/60 border-gray-600 hover:border-blue-400 text-gray-200"
-                      }`}
+                      className="p-4 rounded-xl border-2 bg-gray-700/60 border-gray-600"
                     >
                       <div className="flex items-start space-x-4">
-                        <div
-                          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                            responses[currentQuestionIndex.toString()] ===
-                            option
-                              ? "bg-blue-600 border-blue-500 text-white"
-                              : "border-gray-500 text-gray-300"
-                          }`}
-                        >
-                          <span className="text-sm font-bold uppercase">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 border-gray-500 text-gray-300 bg-gray-600">
+                          <span className="text-lg font-bold uppercase">
                             {optionLabels[optionIndex]}
                           </span>
                         </div>
                         <div className="flex-1">
-                          <span className="text-lg leading-relaxed">
+                          <span className="text-xl text-white leading-relaxed">
                             {option}
                           </span>
                         </div>
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* Answer Selection */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-200 mb-4">
+                    Select your answer:
+                  </h3>
+                  <div className="flex flex-wrap gap-6">
+                    {currentQuestion.options.map((option, optionIndex) => (
+                      <label
+                        key={optionIndex}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name={`question-${currentQuestionIndex}`}
+                          value={option}
+                          checked={
+                            responses[currentQuestionIndex.toString()]
+                              ?.answer === option
+                          }
+                          onChange={() => handleAnswerSelect(option)}
+                          className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-2"
+                        />
+                        <span className="text-lg font-bold text-gray-200 uppercase">
+                          {optionLabels[optionIndex]}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Navigation */}

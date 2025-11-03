@@ -257,8 +257,9 @@ const Results = () => {
             </h3>
             <div className="space-y-6">
               {allQuestions.map((question, index) => {
-                const userAnswer = attempt.responses?.[index.toString()];
-                const isCorrect = userAnswer === question.answer;
+                const userResponse = attempt.responses?.[index.toString()];
+                const userAnswer = userResponse?.answer;
+                const isCorrect = userResponse?.isCorrect || false;
 
                 return (
                   <div
