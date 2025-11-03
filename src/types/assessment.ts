@@ -20,16 +20,3 @@ export interface Assessment {
   created_at?: string;
   updated_at?: string;
 }
-
-export interface Attempt {
-  id: string;
-  assessment_id: string;
-  status: 'in_progress' | 'completed' | 'abandoned';
-  started_at: string;
-  ended_at?: string;
-  duration_minutes?: number;
-  responses: Record<string, string>; // question_id -> selected_answer
-  total_questions?: number;
-  correct_answers?: number;
-  score_percentage?: number;
-}

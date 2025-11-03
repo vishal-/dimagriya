@@ -8,7 +8,8 @@ import {
   FaHome,
   FaRedo
 } from "react-icons/fa";
-import type { Assessment, Attempt } from "../../types/assessment";
+import type { Assessment } from "../../types/assessment";
+import type { Attempt } from "../../types/Attempt";
 import supabase from "../../utils/supabase";
 
 const Results = () => {

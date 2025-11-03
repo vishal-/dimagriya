@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaClock, FaChevronLeft, FaChevronRight, FaFlag } from "react-icons/fa";
-import type { Assessment, Attempt } from "../../types/assessment";
+import type { Assessment } from "../../types/assessment";
+import type { Attempt } from "../../types/Attempt";
 import supabase from "../../utils/supabase";
 import { Prompt } from "../ui";
 
