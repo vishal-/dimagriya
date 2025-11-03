@@ -277,28 +277,25 @@ const TakeAssessment = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
         {/* Header */}
         <div className="bg-gray-800/95 backdrop-blur-sm border-b border-gray-600/50 shadow-lg">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <h1 className="text-xl font-bold text-gray-100">
-                  {assessment.title}
-                </h1>
-                <div className="text-sm text-gray-400">
-                  Question {currentQuestionIndex + 1} of {allQuestions.length}
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-6">
-                <div className="text-sm text-gray-300">
-                  {currentSection?.name}
-                </div>
+          <div className="container mx-auto px-4 py-6">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-gray-100 mb-1">
+                {assessment.title}
+              </h1>
+              <div className="text-sm text-gray-400">
+                Question {currentQuestionIndex + 1} of {allQuestions.length}
+                {currentSection?.name && (
+                  <span className="ml-4 text-gray-300">
+                    • {currentSection.name}
+                  </span>
+                )}
               </div>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 pb-24">
           <div className="max-w-4xl mx-auto">
             {currentQuestion && (
               <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 border border-amber-300/50 shadow-md">
@@ -370,46 +367,46 @@ const TakeAssessment = () => {
                     )}
                   </div>
                 </div>
-
-                {/* Navigation */}
-                <div className="flex justify-between items-center">
-                  <button
-                    onClick={handlePrevious}
-                    disabled={currentQuestionIndex === 0}
-                    className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-                      currentQuestionIndex === 0
-                        ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105"
-                    }`}
-                  >
-                    <FaChevronLeft className="w-4 h-4" />
-                    <span>Previous</span>
-                  </button>
-
-                  <div className="flex space-x-4">
-                    {currentQuestionIndex === allQuestions.length - 1 ? (
-                      <button
-                        onClick={handleFinishTest}
-                        className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <FaFlag className="w-5 h-5" />
-                          <span>Finish Test</span>
-                        </div>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleNext}
-                        className="flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-105"
-                      >
-                        <span>Next</span>
-                        <FaChevronRight className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
               </div>
             )}
+
+            {/* Navigation */}
+            <div className="flex justify-between items-center mt-8">
+              <button
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  currentQuestionIndex === 0
+                    ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105"
+                }`}
+              >
+                <FaChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
+
+              <div className="flex space-x-4">
+                {currentQuestionIndex === allQuestions.length - 1 ? (
+                  <button
+                    onClick={handleFinishTest}
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <FaFlag className="w-5 h-5" />
+                      <span>Finish Test</span>
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleNext}
+                    className="flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-105"
+                  >
+                    <span>Next</span>
+                    <FaChevronRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
