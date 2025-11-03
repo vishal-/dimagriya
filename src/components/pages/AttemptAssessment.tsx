@@ -34,9 +34,27 @@ const AttemptAssessment = () => {
     fetchAssessment();
   }, [fetchAssessment]);
 
-  const handleStartAssessment = () => {
-    // Navigate to the actual assessment view
-    navigate(`/assessment/${id}`);
+  const handleStartAssessment = async () => {
+    try {
+      // Create new attempt record
+      const { data: attempt, error } = await supabase
+        .from("attempts")
+        .insert({
+          assessment_id: id,
+          total_questions: totalQuestions,
+          status: "in_progress"
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Navigate with attempt ID
+      navigate(`/attempt/${id}/${attempt.id}`);
+    } catch (error) {
+      console.error("Failed to start assessment:", error);
+      // Show error to user
+    }
   };
 
   const handleCancel = () => {
