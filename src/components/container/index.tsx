@@ -6,6 +6,7 @@ import AdminAssessmentEditor from "../pages/AdminAssessmentEditor";
 import AdminAnswersList from "../pages/AdminAnswersList";
 import AdminAnswersView from "../pages/AdminAnswersView";
 import Student from "../pages/Student";
+import AttemptAssessment from "../pages/AttemptAssessment";
 import AssessmentView from "../pages/AssessmentView";
 // import Navigation from "../common/Navigation";
 import AuthGuard from "../auth/AuthGuard";
@@ -19,6 +20,7 @@ const Container = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/student" element={<Student />} />
+        <Route path="/attempt/:id" element={<AttemptAssessment />} />
         <Route path="/assessment/:id" element={<AssessmentView />} />
         <Route
           path="/admin"

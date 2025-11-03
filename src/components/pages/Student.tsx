@@ -180,11 +180,18 @@ const Student = () => {
                               {assessment.total_questions} questions
                             </p>
                           </div>
-                          <Link to={`/assessment/${assessment.id}`}>
-                            <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200">
-                              Start Assessment
-                            </button>
-                          </Link>
+                          <div>
+                            <Link to={`/assessment/${assessment.id}`}>
+                              <button className="bg-gradient-to-r from-blue-600 to-blue-900 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200">
+                                Offline
+                              </button>
+                            </Link>
+                            <Link to={`/attempt/${assessment.id}`}>
+                              <button className="ms-2 bg-gradient-to-r from-green-600 to-green-900 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200">
+                                Online
+                              </button>
+                            </Link>
+                          </div>
                         </div>
                       ))}
                     </div>
