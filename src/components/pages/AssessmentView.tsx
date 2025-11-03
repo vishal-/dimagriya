@@ -141,7 +141,7 @@ const AssessmentView = () => {
 
                       return (
                         <div
-                          key={question.id}
+                          key={questionIndex}
                           className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-300/50 shadow-md"
                         >
                           {/* Question Header with Large Number */}
