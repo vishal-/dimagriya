@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaClock, FaChevronLeft, FaChevronRight, FaFlag } from "react-icons/fa";
 import type { Assessment } from "../../types/assessment";
@@ -15,18 +15,25 @@ const TakeAssessment = () => {
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, Response>>({});
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [showFinishPrompt, setShowFinishPrompt] = useState(false);
 
+  // Timer settings
+  const TOTAL_TIME_SECONDS = 60 * 60; // 60 minutes
+  const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME_SECONDS);
+  const [timeUp, setTimeUp] = useState(false);
+
   // Flatten all questions for easier navigation
-  const allQuestions =
-    assessment?.sections.flatMap((section) =>
-      section.questions.map((question, index) => ({
-        ...question,
-        sectionName: section.name,
-        globalIndex: index
-      }))
-    ) || [];
+  const allQuestions = useMemo(
+    () =>
+      assessment?.sections.flatMap((section) =>
+        section.questions.map((question, index) => ({
+          ...question,
+          sectionName: section.name,
+          globalIndex: index
+        }))
+      ) || [],
+    [assessment]
+  );
 
   const currentQuestion = allQuestions[currentQuestionIndex];
   const currentSection = assessment?.sections.find((section) =>
@@ -58,13 +65,14 @@ const TakeAssessment = () => {
       setAssessment(assessmentData);
       setAttempt(attemptData);
 
-      // Calculate time elapsed from attempt start
+      // Calculate time remaining from attempt start
       const startTime = new Date(attemptData.started_at);
       const now = new Date();
       const elapsedSeconds = Math.floor(
         (now.getTime() - startTime.getTime()) / 1000
       );
-      setTimeElapsed(elapsedSeconds);
+      const remaining = Math.max(0, TOTAL_TIME_SECONDS - elapsedSeconds);
+      setTimeRemaining(remaining);
 
       // Load existing responses
       if (attemptData.responses) {
@@ -75,29 +83,36 @@ const TakeAssessment = () => {
     } finally {
       setLoading(false);
     }
-  }, [attemptId]);
+  }, [attemptId, TOTAL_TIME_SECONDS]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Timer effect - sync with DB every 30 seconds
+  // Timer effect - countdown timer
   useEffect(() => {
     if (!attempt || loading) return;
 
     const timer = setInterval(() => {
-      setTimeElapsed((prev) => {
-        const newTime = prev + 1;
+      setTimeRemaining((prev) => {
+        const newTime = Math.max(0, prev - 1);
+
+        // Auto-submit when time runs out
+        if (newTime === 0) {
+          setTimeUp(true);
+        }
 
         // Sync with DB every 30 seconds
-        if (newTime % 30 === 0) {
+        if ((TOTAL_TIME_SECONDS - newTime) % 30 === 0) {
           (async () => {
             try {
               await supabase
                 .from("attempts")
                 .update({
                   responses: responses,
-                  duration_minutes: Math.ceil(newTime / 60)
+                  duration_minutes: Math.ceil(
+                    (TOTAL_TIME_SECONDS - newTime) / 60
+                  )
                 })
                 .eq("id", attemptId);
               console.log("Synced with DB");
@@ -112,9 +127,9 @@ const TakeAssessment = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [attempt, loading, responses, attemptId]);
+  }, [attempt, loading, responses, attemptId, TOTAL_TIME_SECONDS]);
 
-  // Format time as mm:ss
+  // Format time as mm:ss for countdown
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -164,11 +179,11 @@ const TakeAssessment = () => {
     setShowFinishPrompt(true);
   };
 
-  const handleConfirmFinish = async () => {
+  const handleConfirmFinish = useCallback(async () => {
     try {
       // Calculate final score
       let correctAnswers = 0;
-      allQuestions.forEach((_, index) => {
+      allQuestions.forEach((_, index: number) => {
         const response = responses[index.toString()];
         if (response && response.isCorrect) {
           correctAnswers++;
@@ -176,6 +191,9 @@ const TakeAssessment = () => {
       });
 
       const scorePercentage = (correctAnswers / allQuestions.length) * 100;
+      const durationMinutes = Math.ceil(
+        (TOTAL_TIME_SECONDS - timeRemaining) / 60
+      );
 
       // Update attempt in DB
       await supabase
@@ -183,7 +201,7 @@ const TakeAssessment = () => {
         .update({
           status: "completed",
           ended_at: new Date().toISOString(),
-          duration_minutes: Math.ceil(timeElapsed / 60),
+          duration_minutes: durationMinutes,
           responses: responses,
           correct_answers: correctAnswers,
           score_percentage: scorePercentage
@@ -195,7 +213,21 @@ const TakeAssessment = () => {
     } catch (error) {
       console.error("Failed to finish assessment:", error);
     }
-  };
+  }, [
+    allQuestions,
+    responses,
+    TOTAL_TIME_SECONDS,
+    timeRemaining,
+    attemptId,
+    navigate
+  ]);
+
+  // Auto-submit when time runs out
+  useEffect(() => {
+    if (timeUp) {
+      handleConfirmFinish();
+    }
+  }, [timeUp, handleConfirmFinish]);
 
   const handleCancelFinish = () => {
     setShowFinishPrompt(false);
@@ -260,14 +292,6 @@ const TakeAssessment = () => {
                 <div className="text-sm text-gray-300">
                   {currentSection?.name}
                 </div>
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full shadow-md">
-                  <div className="flex items-center space-x-2">
-                    <FaClock className="w-4 h-4" />
-                    <span className="text-sm font-bold font-mono">
-                      {formatTime(timeElapsed)}
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -292,25 +316,27 @@ const TakeAssessment = () => {
 
                 {/* Options */}
                 <div className="space-y-4 mb-8">
-                  {currentQuestion.options.map((option, optionIndex) => (
-                    <div
-                      key={optionIndex}
-                      className="p-4 rounded-xl border-2 bg-gray-700/60 border-gray-600"
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 border-gray-500 text-gray-300 bg-gray-600">
-                          <span className="text-lg font-bold uppercase">
-                            {optionLabels[optionIndex]}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-xl text-white leading-relaxed">
-                            {option}
-                          </span>
+                  {currentQuestion.options.map(
+                    (option: string, optionIndex: number) => (
+                      <div
+                        key={optionIndex}
+                        className="p-4 rounded-xl border-2 bg-gray-700/60 border-gray-600"
+                      >
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 border-gray-500 text-gray-300 bg-gray-600">
+                            <span className="text-lg font-bold uppercase">
+                              {optionLabels[optionIndex]}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-xl text-white leading-relaxed">
+                              {option}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
 
                 {/* Answer Selection */}
@@ -319,27 +345,29 @@ const TakeAssessment = () => {
                     Select your answer:
                   </h3>
                   <div className="flex flex-wrap gap-6">
-                    {currentQuestion.options.map((option, optionIndex) => (
-                      <label
-                        key={optionIndex}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name={`question-${currentQuestionIndex}`}
-                          value={option}
-                          checked={
-                            responses[currentQuestionIndex.toString()]
-                              ?.answer === option
-                          }
-                          onChange={() => handleAnswerSelect(option)}
-                          className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-2"
-                        />
-                        <span className="text-lg font-bold text-gray-200 uppercase">
-                          {optionLabels[optionIndex]}
-                        </span>
-                      </label>
-                    ))}
+                    {currentQuestion.options.map(
+                      (option: string, optionIndex: number) => (
+                        <label
+                          key={optionIndex}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="radio"
+                            name={`question-${currentQuestionIndex}`}
+                            value={option}
+                            checked={
+                              responses[currentQuestionIndex.toString()]
+                                ?.answer === option
+                            }
+                            onChange={() => handleAnswerSelect(option)}
+                            className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-2"
+                          />
+                          <span className="text-lg font-bold text-gray-200 uppercase">
+                            {optionLabels[optionIndex]}
+                          </span>
+                        </label>
+                      )
+                    )}
                   </div>
                 </div>
 
@@ -382,6 +410,31 @@ const TakeAssessment = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Bottom Timer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-600/50 shadow-lg z-50">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-center items-center">
+            <div
+              className={`px-6 py-3 rounded-full shadow-md transition-colors ${
+                timeRemaining < 300 // Less than 5 minutes
+                  ? "bg-red-600 text-white"
+                  : timeRemaining < 600 // Less than 10 minutes
+                  ? "bg-yellow-600 text-white"
+                  : "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <FaClock className="w-5 h-5" />
+                <span className="text-lg font-bold font-mono">
+                  {formatTime(timeRemaining)}
+                </span>
+                <span className="text-sm font-medium">remaining</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
