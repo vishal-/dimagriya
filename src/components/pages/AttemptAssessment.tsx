@@ -10,6 +10,8 @@ const AttemptAssessment = () => {
   const navigate = useNavigate();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
+  const [studentName, setStudentName] = useState("");
+  const [studentNameError, setStudentNameError] = useState("");
 
   const fetchAssessment = useCallback(async () => {
     if (!id) return;
@@ -35,12 +37,26 @@ const AttemptAssessment = () => {
   }, [fetchAssessment]);
 
   const handleStartAssessment = async () => {
+    // Validate student name
+    if (!studentName.trim()) {
+      setStudentNameError("Student name is required");
+      return;
+    }
+
+    if (studentName.trim().length < 2) {
+      setStudentNameError("Student name must be at least 2 characters");
+      return;
+    }
+
+    setStudentNameError(""); // Clear any previous errors
+
     try {
       // Create new attempt record
       const { data: attempt, error } = await supabase
         .from("attempts")
         .insert({
           assessment_id: id,
+          student: studentName.trim(),
           total_questions: totalQuestions,
           status: "in_progress"
         })
@@ -123,6 +139,42 @@ const AttemptAssessment = () => {
             </div>
           </div>
 
+          {/* Student Information */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 mb-8 shadow-lg border border-gray-700/50">
+            <h2 className="text-2xl font-bold text-gray-100 mb-6 flex items-center">
+              <FaBook className="mr-3 text-blue-400" />
+              Student Information
+            </h2>
+
+            <div className="max-w-md">
+              <label
+                htmlFor="studentName"
+                className="block text-sm font-medium text-gray-200 mb-2"
+              >
+                Full Name *
+              </label>
+              <input
+                type="text"
+                id="studentName"
+                value={studentName}
+                onChange={(e) => {
+                  setStudentName(e.target.value);
+                  if (studentNameError) setStudentNameError(""); // Clear error on typing
+                }}
+                placeholder="Enter your full name"
+                className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                  studentNameError
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-600 focus:border-blue-500"
+                }`}
+                required
+              />
+              {studentNameError && (
+                <p className="mt-2 text-sm text-red-400">{studentNameError}</p>
+              )}
+            </div>
+          </div>
+
           {/* Instructions */}
           <AssessmentInstructions />
 
@@ -191,7 +243,12 @@ const AttemptAssessment = () => {
 
             <button
               onClick={handleStartAssessment}
-              className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-3"
+              disabled={!studentName.trim() || studentName.trim().length < 2}
+              className={`w-full sm:w-auto text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-3 ${
+                !studentName.trim() || studentName.trim().length < 2
+                  ? "bg-gray-500 cursor-not-allowed opacity-50"
+                  : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+              }`}
             >
               <FaPlay className="text-lg" />
               <span className="text-lg">Start Assessment</span>

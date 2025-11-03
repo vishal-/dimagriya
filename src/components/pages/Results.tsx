@@ -19,6 +19,9 @@ const Results = () => {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<
+    "all" | "correct" | "incorrect" | "not_attempted"
+  >("all");
 
   // Flatten all questions for easier analysis
   const allQuestions =
@@ -250,102 +253,236 @@ const Results = () => {
             </div>
           </div>
 
+          {/* Question Filters */}
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-gray-700/50">
+            <h3 className="text-lg font-bold text-gray-100 mb-4 flex items-center">
+              <FaCheckCircle className="mr-3 text-blue-400" />
+              Filter Questions
+            </h3>
+
+            <div className="flex flex-wrap gap-4 justify-center">
+              <label className="flex items-center space-x-3 cursor-pointer bg-gray-700/50 px-4 py-3 rounded-lg border border-gray-600 hover:border-blue-500 transition-colors">
+                <input
+                  type="radio"
+                  name="questionFilter"
+                  value="all"
+                  checked={filter === "all"}
+                  onChange={(e) =>
+                    setFilter(
+                      e.target.value as
+                        | "all"
+                        | "correct"
+                        | "incorrect"
+                        | "not_attempted"
+                    )
+                  }
+                  className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-2"
+                />
+                <span className="text-gray-200 font-semibold text-lg">
+                  All Questions
+                </span>
+              </label>
+
+              <label className="flex items-center space-x-3 cursor-pointer bg-green-900/20 px-4 py-3 rounded-lg border border-green-600 hover:border-green-400 transition-colors">
+                <input
+                  type="radio"
+                  name="questionFilter"
+                  value="correct"
+                  checked={filter === "correct"}
+                  onChange={(e) =>
+                    setFilter(
+                      e.target.value as
+                        | "all"
+                        | "correct"
+                        | "incorrect"
+                        | "not_attempted"
+                    )
+                  }
+                  className="w-5 h-5 text-green-600 bg-gray-700 border-gray-600 focus:ring-green-500 focus:ring-2"
+                />
+                <span className="text-green-300 font-semibold text-lg">
+                  Right Answered
+                </span>
+              </label>
+
+              <label className="flex items-center space-x-3 cursor-pointer bg-red-900/20 px-4 py-3 rounded-lg border border-red-600 hover:border-red-400 transition-colors">
+                <input
+                  type="radio"
+                  name="questionFilter"
+                  value="incorrect"
+                  checked={filter === "incorrect"}
+                  onChange={(e) =>
+                    setFilter(
+                      e.target.value as
+                        | "all"
+                        | "correct"
+                        | "incorrect"
+                        | "not_attempted"
+                    )
+                  }
+                  className="w-5 h-5 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2"
+                />
+                <span className="text-red-300 font-semibold text-lg">
+                  Wrong Answered
+                </span>
+              </label>
+
+              <label className="flex items-center space-x-3 cursor-pointer bg-yellow-900/20 px-4 py-3 rounded-lg border border-yellow-600 hover:border-yellow-400 transition-colors">
+                <input
+                  type="radio"
+                  name="questionFilter"
+                  value="not_attempted"
+                  checked={filter === "not_attempted"}
+                  onChange={(e) =>
+                    setFilter(
+                      e.target.value as
+                        | "all"
+                        | "correct"
+                        | "incorrect"
+                        | "not_attempted"
+                    )
+                  }
+                  className="w-5 h-5 text-yellow-600 bg-gray-700 border-gray-600 focus:ring-yellow-500 focus:ring-2"
+                />
+                <span className="text-yellow-300 font-semibold text-lg">
+                  Not Attempted
+                </span>
+              </label>
+            </div>
+          </div>
+
           {/* Question Review */}
           <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-gray-700/50">
             <h3 className="text-xl font-bold text-gray-100 mb-6">
               Question Review
             </h3>
+
             <div className="space-y-6">
-              {allQuestions.map((question, index) => {
-                const userResponse = attempt.responses?.[index.toString()];
-                const userAnswer = userResponse?.answer;
-                const isCorrect = userResponse?.isCorrect || false;
+              {allQuestions
+                .map((question, originalIndex) => ({ question, originalIndex }))
+                .filter(({ originalIndex }) => {
+                  const userResponse =
+                    attempt.responses?.[originalIndex.toString()];
+                  const isCorrect = userResponse?.isCorrect || false;
+                  const hasResponse = userResponse !== undefined;
 
-                return (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg border ${
-                      isCorrect
-                        ? "bg-green-900/20 border-green-600"
-                        : "bg-red-900/20 border-red-600"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <span className="bg-blue-600 text-white px-2 py-1 rounded text-sm font-semibold">
-                          Q{index + 1}
-                        </span>
-                        <span className="text-sm text-gray-400">
-                          {question.sectionName}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {isCorrect ? (
-                          <FaCheckCircle className="text-green-400" />
-                        ) : (
-                          <FaTimesCircle className="text-red-400" />
-                        )}
-                        <span
-                          className={`text-sm font-semibold ${
-                            isCorrect ? "text-green-400" : "text-red-400"
-                          }`}
-                        >
-                          {isCorrect ? "Correct" : "Incorrect"}
-                        </span>
-                      </div>
-                    </div>
+                  switch (filter) {
+                    case "correct":
+                      return hasResponse && isCorrect;
+                    case "incorrect":
+                      return hasResponse && !isCorrect;
+                    case "not_attempted":
+                      return !hasResponse;
+                    case "all":
+                    default:
+                      return true;
+                  }
+                })
+                .map(({ question, originalIndex }) => {
+                  const userResponse =
+                    attempt.responses?.[originalIndex.toString()];
+                  const userAnswer = userResponse?.answer;
+                  const isCorrect = userResponse?.isCorrect || false;
+                  const hasResponse = userResponse !== undefined;
 
-                    <p className="text-gray-100 font-medium mb-3">
-                      {question.question}
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {question.options.map((option, optionIndex) => {
-                        const isUserAnswer = userAnswer === option;
-                        const isCorrectAnswer = question.answer === option;
-
-                        let bgColor = "bg-gray-700/50";
-                        let borderColor = "border-gray-600";
-                        let textColor = "text-gray-300";
-
-                        if (isCorrectAnswer) {
-                          bgColor = "bg-green-900/30";
-                          borderColor = "border-green-500";
-                          textColor = "text-green-300";
-                        } else if (isUserAnswer && !isCorrect) {
-                          bgColor = "bg-red-900/30";
-                          borderColor = "border-red-500";
-                          textColor = "text-red-300";
-                        }
-
-                        return (
-                          <div
-                            key={optionIndex}
-                            className={`p-3 rounded border ${bgColor} ${borderColor}`}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <span className={`font-semibold ${textColor}`}>
-                                {optionLabels[optionIndex]}.
+                  return (
+                    <div
+                      key={originalIndex}
+                      className={`p-4 rounded-lg border ${
+                        hasResponse
+                          ? isCorrect
+                            ? "bg-green-900/20 border-green-600"
+                            : "bg-red-900/20 border-red-600"
+                          : "bg-yellow-900/20 border-yellow-600"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <span className="bg-blue-600 text-white px-2 py-1 rounded text-sm font-semibold">
+                            Q{originalIndex + 1}
+                          </span>
+                          <span className="text-sm text-gray-400">
+                            {question.sectionName}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {hasResponse ? (
+                            <>
+                              {isCorrect ? (
+                                <FaCheckCircle className="text-green-400" />
+                              ) : (
+                                <FaTimesCircle className="text-red-400" />
+                              )}
+                              <span
+                                className={`text-sm font-semibold ${
+                                  isCorrect ? "text-green-400" : "text-red-400"
+                                }`}
+                              >
+                                {isCorrect ? "Correct" : "Incorrect"}
                               </span>
-                              <span className={textColor}>{option}</span>
-                              {isCorrectAnswer && (
-                                <span className="text-green-400 font-semibold ml-auto">
-                                  ✓ Correct
+                            </>
+                          ) : (
+                            <>
+                              <FaTimesCircle className="text-yellow-400" />
+                              <span className="text-sm font-semibold text-yellow-400">
+                                Not Attempted
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-gray-100 font-medium mb-3">
+                        {question.question}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {question.options.map((option, optionIndex) => {
+                          const isUserAnswer = userAnswer === option;
+                          const isCorrectAnswer = question.answer === option;
+
+                          let bgColor = "bg-gray-700/50";
+                          let borderColor = "border-gray-600";
+                          let textColor = "text-gray-300";
+
+                          if (isCorrectAnswer) {
+                            bgColor = "bg-green-900/30";
+                            borderColor = "border-green-500";
+                            textColor = "text-green-300";
+                          } else if (isUserAnswer && !isCorrect) {
+                            bgColor = "bg-red-900/30";
+                            borderColor = "border-red-500";
+                            textColor = "text-red-300";
+                          }
+
+                          return (
+                            <div
+                              key={optionIndex}
+                              className={`p-3 rounded border ${bgColor} ${borderColor}`}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <span className={`font-semibold ${textColor}`}>
+                                  {optionLabels[optionIndex]}.
                                 </span>
-                              )}
-                              {isUserAnswer && !isCorrect && (
-                                <span className="text-red-400 font-semibold ml-auto">
-                                  ✗ Your Answer
-                                </span>
-                              )}
+                                <span className={textColor}>{option}</span>
+                                {isCorrectAnswer && (
+                                  <span className="text-green-400 font-semibold ml-auto">
+                                    ✓ Correct
+                                  </span>
+                                )}
+                                {isUserAnswer && !isCorrect && (
+                                  <span className="text-red-400 font-semibold ml-auto">
+                                    ✗ Your Answer
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
 
