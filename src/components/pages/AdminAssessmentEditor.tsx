@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaEdit, FaCog, FaPencilAlt } from "react-icons/fa";
 import type { Assessment, Problem } from "../../types/assessment";
 import { Modal, Alert } from "../ui";
+import AdminHeader from "../common/AdminHeader";
 import supabase from "../../utils/supabase";
 
 // Edit modal for different field types
@@ -223,6 +224,7 @@ const AdminAssessmentEditor = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <AdminHeader />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -397,7 +399,7 @@ const AdminAssessmentEditor = () => {
                     <div className="space-y-4">
                       {section.questions.map((question, questionIdx) => (
                         <div
-                          key={question.id}
+                          key={questionIdx}
                           className="bg-gray-800/50 rounded-lg p-4 border border-gray-600"
                         >
                           <div className="flex items-start justify-between mb-3">
@@ -405,9 +407,6 @@ const AdminAssessmentEditor = () => {
                               <div className="flex items-center gap-2 mb-2">
                                 <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
                                   Q{questionIdx + 1}
-                                </span>
-                                <span className="text-sm text-gray-400">
-                                  ID: {question.id}
                                 </span>
                               </div>
                               <p className="text-gray-100 font-medium mb-3">

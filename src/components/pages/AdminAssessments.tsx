@@ -4,6 +4,7 @@ import { FaEdit, FaCog, FaTrash } from "react-icons/fa";
 import type { Assessment } from "../../types/assessment";
 import AssessmentForm from "../forms/AssessmentForm";
 import { Alert, Prompt } from "../ui";
+import AdminHeader from "../common/AdminHeader";
 import supabase from "../../utils/supabase";
 
 const AdminAssessments = () => {
@@ -85,19 +86,22 @@ const AdminAssessments = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <AdminHeader />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold text-gray-100">Assessments</h1>
-            <button
-              onClick={() => {
-                setShowForm(!showForm);
-                setSelectedAssessment(null);
-              }}
-              className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
-            >
-              {showForm ? "Cancel" : "Create Assessment"}
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  setShowForm(!showForm);
+                  setSelectedAssessment(null);
+                }}
+                className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+              >
+                {showForm ? "Cancel" : "Create Assessment"}
+              </button>
+            </div>
           </div>
 
           {showForm ? (
