@@ -407,6 +407,52 @@ const TakeAssessment = () => {
                 )}
               </div>
             </div>
+
+            {/* Question Navigation */}
+            <div className="mt-8 bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-gray-600/50">
+              <h4 className="text-lg font-semibold text-gray-200 mb-4 text-center">
+                Question Navigator
+              </h4>
+              <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-15 gap-2">
+                {allQuestions.map((_, index) => {
+                  const hasResponse = responses[index.toString()] !== undefined;
+                  const isCurrentQuestion = index === currentQuestionIndex;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentQuestionIndex(index)}
+                      className={`aspect-square rounded-lg font-bold text-sm transition-all duration-200 ${
+                        isCurrentQuestion
+                          ? "bg-blue-600 text-white ring-2 ring-blue-400 scale-110"
+                          : hasResponse
+                          ? "bg-green-600 hover:bg-green-700 text-white"
+                          : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                      }`}
+                      title={`Question ${index + 1}${
+                        hasResponse ? " (Answered)" : " (Not Answered)"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex justify-center items-center space-x-6 mt-4 text-sm">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-gray-700 rounded"></div>
+                  <span className="text-gray-400">Not Answered</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-green-600 rounded"></div>
+                  <span className="text-gray-400">Answered</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-blue-600 ring-2 ring-blue-400 rounded"></div>
+                  <span className="text-gray-400">Current</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
