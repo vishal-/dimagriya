@@ -123,10 +123,10 @@ export default function Home() {
   const activeAvatarObj = AVATARS.find(a => a.id === avatar) || AVATARS[0];
 
   return (
-    <div className="min-h-screen bg-indigo-50/50 flex justify-center items-start sm:py-8 font-sans antialiased text-indigo-950">
+    <div className="min-h-screen bg-white lg:bg-indigo-50/50 flex justify-center items-start lg:py-8 font-sans antialiased text-indigo-950">
       
       {/* Device Wrapper: max-width 768px for mobile/tablet optimization */}
-      <main className="w-full max-w-[768px] min-h-screen sm:min-h-[920px] bg-white sm:shadow-2xl sm:rounded-[36px] overflow-hidden flex flex-col relative border border-slate-100 pb-28">
+      <main className="w-full max-w-[768px] min-h-screen lg:min-h-[920px] bg-white lg:shadow-2xl lg:rounded-[36px] overflow-hidden flex flex-col relative lg:border lg:border-slate-100 pb-28">
         
         {/* Floating Toast Notification */}
         {toastMessage && (
